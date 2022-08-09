@@ -30,28 +30,27 @@ Sort100                                                                         
 001F D8ED               29             DJNZ R0,LOOP1
 0021 8010               30             SJMP STOP
                         31
-                        32             DO_SWAP:
-0023 FB                 33                     MOV R3,A
-0024 E5F0               34                     MOV A,B
-0026 8BF0               35                     MOV B,R3
-                        36
-0028 F0                 37             MOVX @DPTR,A ; updated a[i+1] stored at appropriate address
-0029 1582               38             DEC DPL ; equivalent to decrementing DPTR since size of array < 256
-002B E5F0               39             MOV A,B ; move updated a[i] to register B
-002D F0                 40             MOVX @DPTR,A ; updated a[i] stored at appropriate address
-                        41
-002E A3                 42             INC DPTR
-                        43
-002F D9E2               44             DJNZ R1,LOOP2
-0031 D8DB               45         DJNZ R0,LOOP1
-                        46
-0033 80FE               47     STOP: SJMP STOP
+0023 FB                 32             DO_SWAP: MOV R3,A
+0024 E5F0               33                     MOV A,B
+0026 8BF0               34                     MOV B,R3
+                        35
+0028 F0                 36             MOVX @DPTR,A ; updated a[i+1] stored at appropriate address
+0029 1582               37             DEC DPL ; equivalent to DEC DPTR since size of array < 256
+002B E5F0               38             MOV A,B ; move updated a[i] to register B
+002D F0                 39             MOVX @DPTR,A ; updated a[i] stored at appropriate address
+                        40
+002E A3                 41             INC DPTR
+                        42
+002F D9E2               43             DJNZ R1,LOOP2
+0031 D8DB               44         DJNZ R0,LOOP1
+                        45
+0033 80FE               46     STOP: SJMP STOP
 ****WARNING:Missing`END'directive
 ASSEMBLY COMPLETE, NO ERRORS FOUND, 1 WARNING
 
 
 ERROR SUMMARY:
-Line 47, WARNING:Missing`END'directive
+Line 46, WARNING:Missing`END'directive
 
 SYMBOL TABLE:
 ??MCU_8051_IDE . . . . . . . . . . .  N  NUMB  8051H  NOT USED

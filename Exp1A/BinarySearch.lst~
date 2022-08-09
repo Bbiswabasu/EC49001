@@ -1,57 +1,74 @@
-Sort100                                                                                                                 PAGE 1
-0000 909000              1     MOV DPTR,#9000H
-                         2
-0003 7864                3     MOV R0,#100
-0005 74FC                4     MOV A,#252
-                         5
-                         6     LOOP:
-0007 F0                  7             MOVX @DPTR,A
-0008 14                  8             DEC A
-0009 A3                  9             INC DPTR
-000A D8FB               10             DJNZ R0,LOOP
+BinarySearch                                                                                                            PAGE 1
+0000 909500              1     MOV DPTR,#9500H
+0003 741F                2     MOV A,#0X1F
+0005 F0                  3     MOVX @DPTR,A
+                         4
+0006 909550              5     MOV DPTR,#9550H
+0009 74FF                6     MOV A,#0XFF ; store -1 by default
+000B F0                  7     MOVX @DPTR,A
+                         8
+000C 7800                9     MOV R0,#0 ; left bound of subarray
+000E 7963               10     MOV R1,#99 ; right bound of subarray
                         11
-000C 7864               12     MOV R0,#100
-                        13     LOOP1:
-000E 7963               14         MOV R1,#99
-0010 909000             15         MOV DPTR,#9000H
-                        16
-                        17         LOOP2:
-0013 E0                 18             MOVX A,@DPTR
-0014 F5F0               19             MOV B,A ; B stores a[i]
-                        20
-0016 A3                 21             INC DPTR
-0017 E0                 22             MOVX A,@DPTR ; A stores a[i+1]
-                        23
-0018 B5F000             24             CJNE A,B,NOT_EQUAl
-                        25             NOT_EQUAL:
-001B 4006               26                     JC DO_SWAP
+                        12     LOOP:
+0010 E8                 13             MOV A,R0
+0011 89F0               14             MOV B,R1
+0013 25F0               15             ADD A,B ; A = R0+R1
+0015 75F002             16             MOV B,#2
+0018 84                 17             DIV AB ; A = (R0+R1)/2
+0019 FA                 18             MOV R2,A ; store the index of the midpoint element in R2
+                        19
+001A 909000             20             MOV DPTR,#9000H
+001D F582               21             MOV DPL,A
+001F E0                 22             MOVX A,@DPTR ; get the value stored in array at midpoint
+0020 F5F0               23             MOV B,A
+                        24
+0022 909500             25             MOV DPTR,#9500H
+0025 E0                 26             MOVX A,@DPTR ; get the value to be searched for
                         27
-001D D9F4               28             DJNZ R1,LOOP2
-001F D8ED               29             DJNZ R0,LOOP1
-0021 8010               30             SJMP STOP
-                        31
-                        32             DO_SWAP:
-0023 FB                 33                     MOV R3,A
-0024 E5F0               34                     MOV A,B
-0026 8BF0               35                     MOV B,R3
-                        36
-0028 F0                 37             MOVX @DPTR,A ; updated a[i+1] stored at appropriate address
-0029 1582               38             DEC DPL ; equivalent to decrementing DPTR since size of array < 256
-002B E5F0               39             MOV A,B ; move updated a[i] to register B
-002D F0                 40             MOVX @DPTR,A ; updated a[i] stored at appropriate address
-                        41
-002E A3                 42             INC DPTR
+0026 B5F007             28             CJNE A,B,COMPARE_VALUES ; if A!=B, compare values and reject appropriate half
+0029 909550             29             MOV DPTR,#9550H ; else store current midpoint index at required address
+002C EA                 30             MOV A,R2
+002D F0                 31             MOVX @DPTR,A
+002E 801A               32             SJMP STOP
+                        33
+                        34             COMPARE_VALUES:
+0030 4002               35                     JC REJECT_UPPER ; if search value<midpoint value, reject upper half
+0032 8005               36                     SJMP REJECT_LOWER ; else reject lower half
+                        37
+                        38                     REJECT_UPPER:
+0034 EA                 39                             MOV A,R2
+0035 14                 40                             DEC A
+0036 F9                 41                             MOV R1,A
+0037 8003               42                             SJMP UPDATE_BOUNDS
                         43
-002F D9E2               44             DJNZ R1,LOOP2
-0031 D8DB               45         DJNZ R0,LOOP1
-                        46
-0033 80FE               47     STOP: SJMP STOP
+                        44                     REJECT_LOWER:
+0039 EA                 45                             MOV A,R2
+003A 04                 46                             INC A
+003B F8                 47                             MOV R0,A
+                        48
+                        49             UPDATE_BOUNDS:
+003C E8                 50                     MOV A,R0
+003D 89F0               51                     MOV B,R1
+003F B5F002             52                     CJNE A,B,COMPARE_BOUNDS ; if R0!=R1, compare who is greater
+0042 D2D7               53                     SETB CY ; else set carry = 1 so that it still loops as we want to loop for R0<=R1
+                        54
+                        55                     COMPARE_BOUNDS:
+0044 40CA               56                             JC LOOP ; if R0<R1, continue to search
+0046 8002               57                             SJMP STOP ; else come out of loop
+                        58
+0048 E8                 59                     MOV A,R0
+0049 29                 60                     ADD A,R1
+                        61
+004A 80FE               62     STOP: SJMP STOP
+                        63
+                        64
 ****WARNING:Missing`END'directive
 ASSEMBLY COMPLETE, NO ERRORS FOUND, 1 WARNING
 
 
 ERROR SUMMARY:
-Line 47, WARNING:Missing`END'directive
+Line 64, WARNING:Missing`END'directive
 
 SYMBOL TABLE:
 ??MCU_8051_IDE . . . . . . . . . . .  N  NUMB  8051H  NOT USED
@@ -103,11 +120,12 @@ CKSEL. . . . . . . . . . . . . . . .  D  ADDR  0085H  NOT USED
 CL . . . . . . . . . . . . . . . . .  D  ADDR  00E9H  NOT USED
 CLKREG . . . . . . . . . . . . . . .  D  ADDR  008FH  NOT USED
 CMOD . . . . . . . . . . . . . . . .  D  ADDR  00D9H  NOT USED
+COMPARE_BOUNDS . . . . . . . . . . .  C  ADDR  0044H
+COMPARE_VALUES . . . . . . . . . . .  C  ADDR  0030H
 CPRL2. . . . . . . . . . . . . . . .  B  ADDR  00C8H  NOT USED
 CR . . . . . . . . . . . . . . . . .  B  ADDR  00DEH  NOT USED
 CT2. . . . . . . . . . . . . . . . .  B  ADDR  00C9H  NOT USED
-CY . . . . . . . . . . . . . . . . .  B  ADDR  00D7H  NOT USED
-DO_SWAP. . . . . . . . . . . . . . .  C  ADDR  0023H
+CY . . . . . . . . . . . . . . . . .  B  ADDR  00D7H
 DP0H . . . . . . . . . . . . . . . .  D  ADDR  0083H  NOT USED
 DP0L . . . . . . . . . . . . . . . .  D  ADDR  0082H  NOT USED
 DP1H . . . . . . . . . . . . . . . .  D  ADDR  0085H  NOT USED
@@ -145,10 +163,7 @@ IT1. . . . . . . . . . . . . . . . .  B  ADDR  008AH  NOT USED
 KBE. . . . . . . . . . . . . . . . .  D  ADDR  009DH  NOT USED
 KBF. . . . . . . . . . . . . . . . .  D  ADDR  009EH  NOT USED
 KBLS . . . . . . . . . . . . . . . .  D  ADDR  009CH  NOT USED
-LOOP . . . . . . . . . . . . . . . .  C  ADDR  0007H
-LOOP1. . . . . . . . . . . . . . . .  C  ADDR  000EH
-LOOP2. . . . . . . . . . . . . . . .  C  ADDR  0013H
-NOT_EQUAL. . . . . . . . . . . . . .  C  ADDR  001BH
+LOOP . . . . . . . . . . . . . . . .  C  ADDR  0010H
 OSCCON . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
 OV . . . . . . . . . . . . . . . . .  B  ADDR  00D2H  NOT USED
 P. . . . . . . . . . . . . . . . . .  B  ADDR  00D0H  NOT USED
@@ -185,6 +200,8 @@ RCAP2H . . . . . . . . . . . . . . .  D  ADDR  00CBH  NOT USED
 RCAP2L . . . . . . . . . . . . . . .  D  ADDR  00CAH  NOT USED
 RCLK . . . . . . . . . . . . . . . .  B  ADDR  00CDH  NOT USED
 RD . . . . . . . . . . . . . . . . .  B  ADDR  00B7H  NOT USED
+REJECT_LOWER . . . . . . . . . . . .  C  ADDR  0039H
+REJECT_UPPER . . . . . . . . . . . .  C  ADDR  0034H
 REN. . . . . . . . . . . . . . . . .  B  ADDR  009CH  NOT USED
 RESET. . . . . . . . . . . . . . . .  C  ADDR  0000H  NOT USED
 RI . . . . . . . . . . . . . . . . .  B  ADDR  0098H  NOT USED
@@ -210,7 +227,7 @@ SPDAT. . . . . . . . . . . . . . . .  D  ADDR  00C5H  NOT USED
 SPDR . . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
 SPSR . . . . . . . . . . . . . . . .  D  ADDR  00AAH  NOT USED
 SPSTA. . . . . . . . . . . . . . . .  D  ADDR  00C4H  NOT USED
-STOP . . . . . . . . . . . . . . . .  C  ADDR  0033H
+STOP . . . . . . . . . . . . . . . .  C  ADDR  004AH
 T0 . . . . . . . . . . . . . . . . .  B  ADDR  00B4H  NOT USED
 T1 . . . . . . . . . . . . . . . . .  B  ADDR  00B5H  NOT USED
 T2CON. . . . . . . . . . . . . . . .  D  ADDR  00C8H  NOT USED
@@ -236,6 +253,7 @@ TR0. . . . . . . . . . . . . . . . .  B  ADDR  008CH  NOT USED
 TR1. . . . . . . . . . . . . . . . .  B  ADDR  008EH  NOT USED
 TR2. . . . . . . . . . . . . . . . .  B  ADDR  00CAH  NOT USED
 TXD. . . . . . . . . . . . . . . . .  B  ADDR  00B1H  NOT USED
+UPDATE_BOUNDS. . . . . . . . . . . .  C  ADDR  003CH
 WDTCON . . . . . . . . . . . . . . .  D  ADDR  00A7H  NOT USED
 WDTPRG . . . . . . . . . . . . . . .  D  ADDR  00A7H  NOT USED
 WDTRST . . . . . . . . . . . . . . .  D  ADDR  00A6H  NOT USED
