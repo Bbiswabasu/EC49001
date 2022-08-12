@@ -28,30 +28,29 @@ Sort100                                                                         
                         27
 001D D9F4               28             DJNZ R1,LOOP2
 001F D8ED               29             DJNZ R0,LOOP1
-0021 8010               30             SJMP STOP
+0021 800D               30             SJMP STOP
                         31
                         32             DO_SWAP:
-0023 FB                 33                     MOV R3,A
-0024 E5F0               34                     MOV A,B
-0026 8BF0               35                     MOV B,R3
-                        36
-0028 F0                 37             MOVX @DPTR,A ; updated a[i+1] stored at appropriate address
-0029 1582               38             DEC DPL ; equivalent to decrementing DPTR since size of array < 256
-002B E5F0               39             MOV A,B ; move updated a[i] to register B
-002D F0                 40             MOVX @DPTR,A ; updated a[i] stored at appropriate address
+0023 C5F0               33                     XCH A,B
+                        34
+0025 F0                 35             MOVX @DPTR,A ; updated a[i+1] stored at appropriate address
+0026 1582               36             DEC DPL ; equivalent to decrementing DPTR since size of array < 256
+0028 E5F0               37             MOV A,B ; move updated a[i] to register B
+002A F0                 38             MOVX @DPTR,A ; updated a[i] stored at appropriate address
+                        39
+002B A3                 40             INC DPTR
                         41
-002E A3                 42             INC DPTR
-                        43
-002F D9E2               44             DJNZ R1,LOOP2
-0031 D8DB               45         DJNZ R0,LOOP1
+002C D9E5               42             DJNZ R1,LOOP2
+002E D8DE               43         DJNZ R0,LOOP1
+                        44
+0030 80FE               45     STOP: SJMP STOP
                         46
-0033 80FE               47     STOP: SJMP STOP
 ****WARNING:Missing`END'directive
 ASSEMBLY COMPLETE, NO ERRORS FOUND, 1 WARNING
 
 
 ERROR SUMMARY:
-Line 47, WARNING:Missing`END'directive
+Line 46, WARNING:Missing`END'directive
 
 SYMBOL TABLE:
 ??MCU_8051_IDE . . . . . . . . . . .  N  NUMB  8051H  NOT USED
@@ -210,7 +209,7 @@ SPDAT. . . . . . . . . . . . . . . .  D  ADDR  00C5H  NOT USED
 SPDR . . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
 SPSR . . . . . . . . . . . . . . . .  D  ADDR  00AAH  NOT USED
 SPSTA. . . . . . . . . . . . . . . .  D  ADDR  00C4H  NOT USED
-STOP . . . . . . . . . . . . . . . .  C  ADDR  0033H
+STOP . . . . . . . . . . . . . . . .  C  ADDR  0030H
 T0 . . . . . . . . . . . . . . . . .  B  ADDR  00B4H  NOT USED
 T1 . . . . . . . . . . . . . . . . .  B  ADDR  00B5H  NOT USED
 T2CON. . . . . . . . . . . . . . . .  D  ADDR  00C8H  NOT USED

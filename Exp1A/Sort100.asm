@@ -30,9 +30,7 @@ LOOP1:
     	SJMP STOP
 
     	DO_SWAP:
-    		MOV R3,A
-    		MOV A,B
-    		MOV B,R3
+    		XCH A,B
 
     	MOVX @DPTR,A ; updated a[i+1] stored at appropriate address
     	DEC DPL ; equivalent to decrementing DPTR since size of array < 256

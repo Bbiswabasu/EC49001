@@ -51,11 +51,11 @@ LOOP:
 		MOV B,R1
 		CJNE A,B,COMPARE_BOUNDS ; if R0!=R1, compare who is greater
 		SETB CY ; else set carry = 1 so that it still loops as we want to loop for R0<=R1
-	
+
 		COMPARE_BOUNDS:
 			JC LOOP ; if R0<R1, continue to search
 			SJMP STOP ; else come out of loop
-	
+
 		MOV A,R0
 		ADD A,R1
 
