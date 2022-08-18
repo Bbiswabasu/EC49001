@@ -1,10 +1,10 @@
 EvaluatePolynomial                                                                                                      PAGE 1
 0000 909500              1     MOV DPTR,#9500H
-0003 7404                2     MOV A,#4
+0003 7401                2     MOV A,#1
 0005 F0                  3     MOVX @DPTR,A ; value of n stored at 9500H
                          4
 0006 909501              5     MOV DPTR,#9501H
-0009 7402                6     MOV A,#2
+0009 7405                6     MOV A,#5
 000B F0                  7     MOVX @DPTR,A ; value of x stored at 9501H
                          8
 000C 909500              9     MOV DPTR,#9500H

@@ -1,9 +1,9 @@
 MOV DPTR,#9500H
-MOV A,#4
+MOV A,#1
 MOVX @DPTR,A ; value of n stored at 9500H
 
 MOV DPTR,#9501H
-MOV A,#2
+MOV A,#5
 MOVX @DPTR,A ; value of x stored at 9501H
 
 MOV DPTR,#9500H

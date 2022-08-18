@@ -1,63 +1,75 @@
-EvaluatePolynomial                                                                                                      PAGE 1
-0000 909500              1     MOV DPTR,#9500H
-0003 7404                2     MOV A,#4
-0005 F0                  3     MOVX @DPTR,A ; value of n stored at 9500H
-                         4
-0006 909501              5     MOV DPTR,#9501H
-0009 7402                6     MOV A,#2
-000B F0                  7     MOVX @DPTR,A ; value of x stored at 9501H
-                         8
-000C 909500              9     MOV DPTR,#9500H
-000F E0                 10     MOVX A,@DPTR
-0010 909502             11     MOV DPTR,#9502H
-0013 F8                 12     MOV R0,A
-0014 08                 13     INC R0
-                        14
-0015 740A               15     MOV A,#10 ; value of a[0]
-                        16
-                        17     LOOP:
-0017 F0                 18             MOVX @DPTR,A ; keeps storing a[0],a[1],...,a[n]
-0018 A3                 19             INC DPTR
-0019 14                 20             DEC A
-001A D8FB               21             DJNZ R0,LOOP
-                        22
-001C 909501             23     MOV DPTR,#9501H
-001F E0                 24     MOVX A,@DPTR
-0020 F8                 25     MOV R0,A ; R0 stores the value of x
-                        26
-0021 909500             27     MOV DPTR,#9500H
-0024 E0                 28     MOVX A,@DPTR
-0025 F9                 29     MOV R1,A ; R1 stores the value of n
-                        30
-0026 909502             31     MOV DPTR,#9502H
-0029 E582               32     MOV A,DPL
-002B 29                 33     ADD A,R1
-002C F582               34     MOV DPL,A
-002E E0                 35     MOVX A,@DPTR
-002F FA                 36     MOV R2,A ; R2 stores the value of evaluated polynomial
-                        37
-                        38     EVALUATE:
-0030 EA                 39             MOV A,R2
-0031 88F0               40             MOV B,R0
-0033 A4                 41             MUL AB ; multiply x with value evaluated till now
-0034 FA                 42             MOV R2,A ; store the value back into R2
-0035 1582               43             DEC DPL
-0037 E0                 44             MOVX A,@DPTR ; store previous coefficient in A
-0038 2A                 45             ADD A,R2 ; add the coefficient to the result
-0039 FA                 46             MOV R2,A
-003A D9F4               47             DJNZ R1,EVALUATE
-                        48
-003C 909550             49     MOV DPTR,#9550H
-003F EA                 50     MOV A,R2
-0040 F0                 51     MOVX @DPTR,A
-                        52
-0041 80FE               53     STOP: SJMP STOP
+SubstringSearch                                                                                                         PAGE 1
+0000 909000              1     MOV DPTR,#9000H
+0003 7410                2     MOV A,#10H
+0005 7805                3     MOV R0,#5 ; stores length of pattern
+                         4     GENERATE_PATTERN:
+0007 F0                  5             MOVX @DPTR,A
+0008 14                  6             DEC A
+0009 A3                  7             INC DPTR
+000A D8FB                8             DJNZ R0,GENERATE_PATTERN
+000C 7400                9     MOV A,#0
+000E F0                 10     MOVX @DPTR,A
+000F 7805               11     MOV R0,#5
+                        12
+0011 909200             13     MOV DPTR,#9200H
+0014 741F               14     MOV A,#1FH
+0016 7914               15     MOV R1,#20 ; stores length of string to be matched with
+                        16     GENERATE_STRING:
+0018 F0                 17             MOVX @DPTR,A
+0019 14                 18             DEC A
+001A A3                 19             INC DPTR
+001B D9FB               20             DJNZ R1,GENERATE_STRING
+001D 7400               21     MOV A,#0
+001F F0                 22     MOVX @DPTR,A
+                        23
+0020 909500             24     MOV DPTR,#9500H
+0023 74FF               25     MOV A,#0XFF
+0025 F0                 26     MOVX @DPTR,A
+                        27
+0026 7A00               28     MOV R2,#0 ; starting index to be matched in string
+                        29     TRAVERSE_STRING:
+0028 7B00               30             MOV R3,#0 ; current index in pattern which is to be matched with string
+                        31             MATCH_PATTERN:
+002A 909200             32                     MOV DPTR,#9200H
+002D E582               33                     MOV A,DPL
+002F 2A                 34                     ADD A,R2
+0030 2B                 35                     ADD A,R3
+0031 F582               36                     MOV DPL,A
+0033 E0                 37                     MOVX A,@DPTR
+0034 FC                 38                     MOV R4,A
+                        39
+0035 601F               40                     JZ STOP ; if character in string is null, it means we do not have sufficient remainin
+                        41
+0037 909000             42                     MOV DPTR,#9000H
+003A E582               43                     MOV A,DPL
+003C 2B                 44                     ADD A,R3
+003D F582               45                     MOV DPL,A
+003F E0                 46                     MOVX A,@DPTR
+                        47
+0040 8CF0               48                     MOV B,R4
+0042 B5F00E             49                     CJNE A,B,IGNORE_NEXT
+                        50
+0045 0B                 51                     INC R3
+0046 EB                 52                     MOV A,R3
+0047 88F0               53                     MOV B,R0
+0049 B5F0DE             54                     CJNE A,B,MATCH_PATTERN
+                        55
+004C 909500             56                     MOV DPTR,#9500H
+004F EA                 57                     MOV A,R2
+0050 F0                 58                     MOVX @DPTR,A
+0051 8003               59                     SJMP STOP
+                        60
+                        61                     IGNORE_NEXT:
+0053 0A                 62                             INC R2
+0054 80D2               63                             SJMP TRAVERSE_STRING
+                        64
+0056 80FE               65     STOP: SJMP STOP
 ****WARNING:Missing`END'directive
 ASSEMBLY COMPLETE, NO ERRORS FOUND, 1 WARNING
 
 
 ERROR SUMMARY:
-Line 53, WARNING:Missing`END'directive
+Line 65, WARNING:Missing`END'directive
 
 SYMBOL TABLE:
 ??MCU_8051_IDE . . . . . . . . . . .  N  NUMB  8051H  NOT USED
@@ -126,7 +138,6 @@ ES . . . . . . . . . . . . . . . . .  B  ADDR  00ACH  NOT USED
 ET0. . . . . . . . . . . . . . . . .  B  ADDR  00A9H  NOT USED
 ET1. . . . . . . . . . . . . . . . .  B  ADDR  00ABH  NOT USED
 ET2. . . . . . . . . . . . . . . . .  B  ADDR  00ADH  NOT USED
-EVALUATE . . . . . . . . . . . . . .  C  ADDR  0030H
 EX0. . . . . . . . . . . . . . . . .  B  ADDR  00A8H  NOT USED
 EX1. . . . . . . . . . . . . . . . .  B  ADDR  00AAH  NOT USED
 EXEN2. . . . . . . . . . . . . . . .  B  ADDR  00CBH  NOT USED
@@ -135,9 +146,12 @@ EXTI0. . . . . . . . . . . . . . . .  C  ADDR  0003H  NOT USED
 EXTI1. . . . . . . . . . . . . . . .  C  ADDR  0013H  NOT USED
 F0 . . . . . . . . . . . . . . . . .  B  ADDR  00D5H  NOT USED
 FE . . . . . . . . . . . . . . . . .  B  ADDR  009FH  NOT USED
+GENERATE_PATTERN . . . . . . . . . .  C  ADDR  0007H
+GENERATE_STRING. . . . . . . . . . .  C  ADDR  0018H
 IE . . . . . . . . . . . . . . . . .  D  ADDR  00A8H  NOT USED
 IE0. . . . . . . . . . . . . . . . .  B  ADDR  0089H  NOT USED
 IE1. . . . . . . . . . . . . . . . .  B  ADDR  008BH  NOT USED
+IGNORE_NEXT. . . . . . . . . . . . .  C  ADDR  0053H
 INT0 . . . . . . . . . . . . . . . .  B  ADDR  00B2H  NOT USED
 INT1 . . . . . . . . . . . . . . . .  B  ADDR  00B3H  NOT USED
 IP . . . . . . . . . . . . . . . . .  D  ADDR  00B8H  NOT USED
@@ -151,7 +165,7 @@ IT1. . . . . . . . . . . . . . . . .  B  ADDR  008AH  NOT USED
 KBE. . . . . . . . . . . . . . . . .  D  ADDR  009DH  NOT USED
 KBF. . . . . . . . . . . . . . . . .  D  ADDR  009EH  NOT USED
 KBLS . . . . . . . . . . . . . . . .  D  ADDR  009CH  NOT USED
-LOOP . . . . . . . . . . . . . . . .  C  ADDR  0017H
+MATCH_PATTERN. . . . . . . . . . . .  C  ADDR  002AH
 OSCCON . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
 OV . . . . . . . . . . . . . . . . .  B  ADDR  00D2H  NOT USED
 P. . . . . . . . . . . . . . . . . .  B  ADDR  00D0H  NOT USED
@@ -213,7 +227,7 @@ SPDAT. . . . . . . . . . . . . . . .  D  ADDR  00C5H  NOT USED
 SPDR . . . . . . . . . . . . . . . .  D  ADDR  0086H  NOT USED
 SPSR . . . . . . . . . . . . . . . .  D  ADDR  00AAH  NOT USED
 SPSTA. . . . . . . . . . . . . . . .  D  ADDR  00C4H  NOT USED
-STOP . . . . . . . . . . . . . . . .  C  ADDR  0041H
+STOP . . . . . . . . . . . . . . . .  C  ADDR  0056H
 T0 . . . . . . . . . . . . . . . . .  B  ADDR  00B4H  NOT USED
 T1 . . . . . . . . . . . . . . . . .  B  ADDR  00B5H  NOT USED
 T2CON. . . . . . . . . . . . . . . .  D  ADDR  00C8H  NOT USED
@@ -238,6 +252,7 @@ TMOD . . . . . . . . . . . . . . . .  D  ADDR  0089H  NOT USED
 TR0. . . . . . . . . . . . . . . . .  B  ADDR  008CH  NOT USED
 TR1. . . . . . . . . . . . . . . . .  B  ADDR  008EH  NOT USED
 TR2. . . . . . . . . . . . . . . . .  B  ADDR  00CAH  NOT USED
+TRAVERSE_STRING. . . . . . . . . . .  C  ADDR  0028H
 TXD. . . . . . . . . . . . . . . . .  B  ADDR  00B1H  NOT USED
 WDTCON . . . . . . . . . . . . . . .  D  ADDR  00A7H  NOT USED
 WDTPRG . . . . . . . . . . . . . . .  D  ADDR  00A7H  NOT USED
